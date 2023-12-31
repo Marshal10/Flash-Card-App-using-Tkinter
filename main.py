@@ -9,12 +9,11 @@ current_card={}
 # ---------------------------- CHOOSE A FILE ------------------------------- #
 try:
     data=pandas.read_csv("data/words_to_learn.csv")
-    df_dict=data.to_dict(orient="records")
 except pandas.errors.EmptyDataError:
     data=pandas.read_csv("data/french_words.csv")
-    df_dict=data.to_dict(orient="records")
 except FileNotFoundError:
     data=pandas.read_csv("data/french_words.csv")
+finally:
     df_dict=data.to_dict(orient="records")
 
 # ---------------------------- RANDOM CARD ------------------------------- #
@@ -25,7 +24,7 @@ def next_card():
     try:
         current_card=choice(df_dict)
     except IndexError:
-        messagebox.showinfo("Congrats","You now have leared all the words")
+        messagebox.showinfo("Congrats","You now know all the words")
         return
     canvas.itemconfig(lang,text="French",fill="black")
     canvas.itemconfig(word,text=f"{current_card["French"]}",fill="black")
