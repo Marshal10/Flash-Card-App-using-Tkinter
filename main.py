@@ -7,6 +7,7 @@ data=pandas.read_csv("data/french_words.csv")
 df_dict=data.to_dict(orient="records")
 
 def random_word():
+    canvas.itemconfig(card,image=front_card)
     random_word=choice(df_dict)
     french_word=random_word["French"]
     english_word=random_word["English"]
@@ -21,9 +22,15 @@ def random_word():
         else:
             break
     words_known.append(french_word)
-    canvas.itemconfig(lang,text="French")
-    canvas.itemconfig(word,text=french_word)
+    canvas.itemconfig(lang,text="French",fill="black")
+    canvas.itemconfig(word,text=french_word,fill="black")
+    window.after(3000,flip,english_word)
 
+def flip(en_word):
+    canvas.itemconfig(card,image=back_card)
+    canvas.itemconfig(lang,text="English",fill="white")
+    canvas.itemconfig(word,text=en_word,fill="white")
+    
 
 # ---------------------------- UI SETUP ------------------------------- #
 window=Tk()
@@ -32,6 +39,7 @@ window.config(padx=50,pady=50,bg=BACKGROUND_COLOR)
 
 canvas=Canvas(width=800,height=526,highlightthickness=0,bg=BACKGROUND_COLOR)
 front_card=PhotoImage(file="images/card_front.png")
+back_card=PhotoImage(file="images/card_back.png")
 card=canvas.create_image(400,263,image=front_card)
 lang=canvas.create_text(400,150,text="Title",fill="black",font=("Arial",40,"italic"))
 word=canvas.create_text(400,263,text="Word",fill="black",font=("Arial",60,"bold"))
