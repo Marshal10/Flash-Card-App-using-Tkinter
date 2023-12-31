@@ -2,40 +2,32 @@ from tkinter import *
 from random import choice
 import pandas
 BACKGROUND_COLOR = "#B1DDC6"
-words_known=[]
+
 data=pandas.read_csv("data/french_words.csv")
 df_dict=data.to_dict(orient="records")
+current_card={}
 
-def random_word():
+def next_card():
+    global current_card,flip_timer
+    window.after_cancel(flip_timer)
     canvas.itemconfig(card,image=front_card)
-    random_word=choice(df_dict)
-    french_word=random_word["French"]
-    english_word=random_word["English"]
-
-    while True:
-        if len(words_known)==len(df_dict) :
-            return
-        elif french_word in words_known:
-            random_word=choice(df_dict)
-            french_word=random_word["French"]
-            english_word=random_word["English"]
-        else:
-            break
-    words_known.append(french_word)
+    current_card=choice(df_dict)
     canvas.itemconfig(lang,text="French",fill="black")
-    canvas.itemconfig(word,text=french_word,fill="black")
-    window.after(3000,flip,english_word)
+    canvas.itemconfig(word,text=f"{current_card["French"]}",fill="black")
+    flip_timer=window.after(3000,flip)
 
-def flip(en_word):
+
+def flip():
     canvas.itemconfig(card,image=back_card)
     canvas.itemconfig(lang,text="English",fill="white")
-    canvas.itemconfig(word,text=en_word,fill="white")
+    canvas.itemconfig(word,text=f"{current_card["English"]}",fill="white")
     
 
 # ---------------------------- UI SETUP ------------------------------- #
 window=Tk()
 window.title("Flashy")
 window.config(padx=50,pady=50,bg=BACKGROUND_COLOR)
+flip_timer=window.after(3000,flip)
 
 canvas=Canvas(width=800,height=526,highlightthickness=0,bg=BACKGROUND_COLOR)
 front_card=PhotoImage(file="images/card_front.png")
@@ -47,13 +39,13 @@ canvas.grid(column=0,row=0,columnspan=2)
 
 
 wrong_img=PhotoImage(file="images/wrong.png")
-wrong_btn=Button(image=wrong_img,highlightthickness=0,command=random_word)
+wrong_btn=Button(image=wrong_img,highlightthickness=0,command=next_card)
 wrong_btn.grid(column=0,row=1)
 
 right_img=PhotoImage(file="images/right.png")
-right_btn=Button(image=right_img,highlightthickness=0,command=random_word)
+right_btn=Button(image=right_img,highlightthickness=0,command=next_card)
 right_btn.grid(column=1,row=1)
 
-random_word()
+next_card()
 
 window.mainloop()
